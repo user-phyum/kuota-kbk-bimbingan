@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal KBK & Calon Pembimbing - Departemen Fisika FMIPA UM</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PapaParse for Google Sheet CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        um: {
+                            blue: '#002B49',
+                            navy: '#0A192F',
+                            gold: '#E0AA3E',
+                            yellow: '#FFC72C',
+                            lightbg: '#F8FAFC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Header Bar -->
+    <header class="bg-um-blue text-white sticky top-0 z-50 shadow-md border-b-4 border-um-gold">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <img src="https://upload.wikimedia.org/wikipedia/id/7/73/Lambang_Universitas_Negeri_Malang.jpg?utm_source=id.wikipedia.org&utm_campaign=index&utm_content=original" 
+                     alt="Logo Universitas Negeri Malang" 
+                     referrerpolicy="no-referrer"
+                     class="h-14 w-14 object-contain drop-shadow bg-white rounded-full p-1 border border-slate-200"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'48\' fill=\'%23002B49\' stroke=\'%23E0AA3E\' stroke-width=\'4\'/><circle cx=\'50\' cy=\'50\' r=\'38\' fill=\'%23ffffff\'/><text x=\'50\' y=\'46\' font-family=\'sans-serif\' font-weight=\'900\' font-size=\'22\' text-anchor=\'middle\' fill=\'%23002B49\'>UM</text><text x=\'50\' y=\'64\' font-family=\'sans-serif\' font-weight=\'bold\' font-size=\'7.5\' text-anchor=\'middle\' fill=\'%23E0AA3E\'>MALANG</text></svg>';">
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        <span>Departemen Fisika</span>
+                        <span class="text-xs bg-um-gold text-um-navy font-extrabold px-2 py-0.5 rounded uppercase">FMIPA UM</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-200">Universitas Negeri Malang • Portal KBK & Calon Pembimbing</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Links -->
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button onclick="fetchSheetData()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-slate-200 transition duration-150 flex items-center gap-2 border border-slate-600">
+                    <i id="refresh-icon" class="fas fa-sync-alt">
+
+</i>
+                    <span id="refresh-text">Refresh Kuota</span>
+                </button>
+                <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" rel="noopener noreferrer" 
+                   class="px-4 py-2 bg-um-gold hover:bg-yellow-500 text-um-navy text-xs font-bold rounded-lg transition duration-150 shadow flex items-center gap-2">
+                    <i class="fas fa-external-link-alt">
+
+</i>
+                    <span>Buka Form Pendaftaran</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero / Information Banner -->
+    <section class="bg-gradient-to-r from-um-navy via-um-blue to-slate-900 text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                <div class="lg:col-span-2 space-y-3">
+                    <div class="inline-flex items-center gap-2 bg-blue-900/80 text-blue-200 text-xs px-3 py-1 rounded-full border border-blue-700">
+                        <i class="fas fa-bullhorn text-um-gold">
+
+</i>
+                        <span>Informasi Pemetaan Kelompok Bidang Keahlian (KBK) & Skripsi</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                        Pemetaan Kelompok Bidang Keahlian (KBK) & Calom Pembimbing
+                    </h2>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Pastikan Anda memeriksa sisa kuota dosen calon pembimbing sebelum mengisi formulir resmi. Apabila kuota dosen yang dipilih telah terpenuhi (penuh), isian Anda <strong class="text-red-400 font-semibold">tidak akan dimasukkan dalam pemetaan</strong>.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3 text-xs text-slate-300">
+                        <span class="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700">
+                            <i class="fas fa-database text-blue-400"></i> Source: Sheet DATA_NFIS2 (Kolom L)
+                        </span>
+                        <span class="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700">
+                            <i class="fas fa-clock text-yellow-400"></i> Live Updating Status
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Registration Card Direct Link -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 text-center shadow-xl">
+                    <div class="w-12 h-12 bg-um-gold text-um-navy rounded-full flex items-center justify-center mx-auto mb-3 shadow">
+                        <i class="fas fa-file-signature text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-white text-base mb-1">Formulir Pendaftaran KBK</h3>
+                    <p class="text-xs text-slate-200 mb-4">Isi pendaftaran resmi melalui tautan Google Form UM</p>
+                    <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" rel="noopener noreferrer" 
+                       class="inline-block w-full py-2.5 px-4 bg-um-gold hover:bg-yellow-400 text-um-navy font-extrabold text-sm rounded-xl transition duration-200 shadow-lg transform hover:-translate-y-0.5">
+                        Isi Form Sekarang <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
+        
+        <!-- SECTION 1: LAYAR PALING DEPAN - Status Pemetaan Mahasiswa -->
+        <section id="section-pemetaan-mahasiswa" class="bg-white rounded-2xl border-2 border-emerald-400 shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-900 via-um-blue to-slate-800 p-5 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-700">
+                <div>
+                    <span class="inline-block bg-emerald-400 text-slate-950 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full mb-1 tracking-wider">
+                        <i class="fas fa-id-card mr-1"></i> Layar Utama Pemetaan Mahasiswa
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
+                        <i class="fas fa-user-check text-emerald-400"></i> Status Hasil Pemetaan KBK & Pembimbing Mahasiswa
+                    </h3>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Silakan cari Nama atau NIM Anda. Mahasiswa yang <strong class="text-amber-300">tidak tertera di daftar ini</strong> wajib melakukan pendaftaran ulang melalui formulir resmi.
+                    </p>
+                </div>
+                <div class="shrink-0 w-full md:w-auto">
+                    <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" rel="noopener noreferrer" 
+                       class="w-full md:w-auto px-4 py-2.5 bg-um-gold hover:bg-yellow-400 text-um-navy font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-md">
+                        <i class="fas fa-edit"></i> Form Pendaftaran KBK
+                    </a>
+                </div>
+            </div>
+
+            <div class="p-5 sm:p-6 bg-slate-50">
+                <!-- Live Search Box for Students -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                        <div class="sm:col-span-2 relative">
+                            <label for="search-mhs" class="block text-xs font-bold text-slate-700 mb-1">Cari Nama / NIM Mahasiswa:</label>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input type="text" id="search-mhs" oninput="filterStudents()" 
+                                       placeholder="Ketik Nama atau NIM (contoh: 240322604293 atau Fiqriana)..." 
+                                       class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-um-blue focus:bg-white transition">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="filter-offering" class="block text-xs font-bold text-slate-700 mb-1">Filter Offering/Kelas:</label>
+                            <select id="filter-offering" onchange="filterStudents()" 
+                                    class="w-full py-2.5 px-3 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-um-blue focus:bg-white transition">
+                                <option value="ALL">Semua Kelas / Offering</option>
+                                <option value="N">Offering N</option>
+                                <option value="O">Offering O</option>
+                                <option value="AM">Offering AM</option>
+                                <option value="M">Offering M</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Alert Banner for Notice -->
+                    <div id="mhs-notice-banner" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-3 text-xs text-blue-900">
+                        <i class="fas fa-info-circle text-blue-600 text-lg shrink-0 mt-0.5"></i>
+                        <div class="space-y-1">
+                            <p class="font-bold text-sm text-blue-950">Petunjuk Pengecekan Mahasiswa Terpeta:</p>
+                            <p class="leading-relaxed">
+                                Mahasiswa yang namanya tertera dengan status <strong class="text-emerald-700 uppercase bg-emerald-100 px-1.5 py-0.5 rounded font-bold">Sudah Dipetakan</strong> berarti telah resmi terdata. Bagi mahasiswa yang <strong class="text-red-600 underline">TIDAK ADA / TIDAK DITEMUKAN dalam daftar ini</strong>, diminta untuk mengisi form pendaftaran KBK dan Calon Pembimbing kembali dengan memperhatikan kuota dosen yang masih tersedia.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Table List -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm custom-scrollbar">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 border-b border-slate-200 font-bold text-slate-700 uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4 w-12 text-center">No</th>
+                                <th class="py-3 px-4">Nama Lengkap</th>
+                                <th class="py-3 px-4">NIM</th>
+                                <th class="py-3 px-4">Program Studi</th>
+                                <th class="py-3 px-4 text-center">Kelas/Offering</th>
+                                <th class="py-3 px-4 text-center">Status Pemetaan</th>
+                                <th class="py-3 px-4 text-center">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mhs-table-body" class="divide-y divide-slate-100 text-slate-800">
+                            <!-- Injected dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Summary Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Dosen</p>
+                    <p id="stat-total-dosen" class="text-2xl font-bold text-slate-800">10</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-tie text-lg">
+
+</i>
+                </div>
+            </div>
+            
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Kapasitas Total</p>
+                    <p id="stat-total-kuota" class="text-2xl font-bold text-slate-800">33</p>
+                </div>
+                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-lg">
+
+</i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Kuotasi Terisi</p>
+                    <p id="stat-total-terisi" class="text-2xl font-bold text-indigo-600">0</p>
+                </div>
+                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-check text-lg">
+
+</i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Sisa Kuota Total</p>
+                    <p id="stat-sisa-kuota" class="text-2xl font-bold text-emerald-600">33</p>
+                </div>
+                <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chair text-lg">
+
+</i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 overflow-hidden">
+            <div class="flex border-b border-slate-200 bg-slate-50 overflow-x-auto">
+                <button onclick="switchTab('tab-dosen')" id="btn-tab-dosen" 
+                        class="tab-btn px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-um-blue text-um-blue flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-th-large">
+
+</i> Status Kuota Dosen Pembimbing
+                </button>
+                <button onclick="switchTab('tab-sheet')" id="btn-tab-sheet" 
+                        class="tab-btn px-6 py-3.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-table">
+
+</i> Data Spreadsheet (DATA_NFIS2)
+                </button>
+                <button onclick="switchTab('tab-panduan')" id="btn-tab-panduan" 
+                        class="tab-btn px-6 py-3.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-info-circle">
+
+</i> Petunjuk & Alur Pendaftaran
+                </button>
+            </div>
+
+            <!-- TAB 1: Status Kuota Dosen -->
+            <div id="tab-dosen" class="p-6">
+                <!-- Search and Filter Bar -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-80">
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="search-dosen" oninput="renderLecturers()" 
+                               placeholder="Cari nama dosen atau KBK..." 
+                               class="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-um-blue focus:bg-white transition">
+                    </div>
+
+                    <!-- Filter Buttons -->
+                    <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        <button onclick="setFilter('all')" id="filter-all" class="filter-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-um-blue text-white shadow-sm">
+                            Semua Dosen (<span id="cnt-all">10</span>)
+                        </button>
+                        <button onclick="setFilter('available')" id="filter-available" class="filter-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            Kuota Tersedia (<span id="cnt-available">10</span>)
+                        </button>
+                        <button onclick="setFilter('full')" id="filter-full" class="filter-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            Kuota Penuh (<span id="cnt-full">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sync Notice Header -->
+                <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 rounded-lg text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-sync text-blue-600 animate-spin" id="sync-spinner" style="display:none;">
+
+</i>
+                        <span>Status kuota diperbarui berdasarkan data pendaftaran pada sheet <strong>DATA_NFIS2 (Kolom L)</strong>.</span>
+                    </div>
+                    <span id="last-updated" class="text-blue-700 font-medium whitespace-nowrap">Terakhir diperbarui: Just now</span>
+                </div>
+
+                <!-- Lecturers Grid -->
+                <div id="lecturers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
+                    <!-- Cards injected via JavaScript -->
+                </div>
+            </div>
+
+            <!-- TAB 2: Embedded Spreadsheet -->
+            <div id="tab-sheet" class="p-6 hidden">
+                <div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-800">Lembar Data Pendaftaran KBK (Sheet DATA_NFIS2)</h3>
+                        <p class="text-xs text-slate-500">Tampilan langsung data spreadsheet dari server UM. Penentuan kuota diambil dari Kolom L.</p>
+                    </div>
+                    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQgbIttt8l_r8etHRiV95jqUgKs-XK-ZQA1NpY2jAWm_QVz4UZF8hv2q20tlhmCU_OYbSrSIb_7LzkM/pubhtml?gid=1534693421&single=true" 
+                       target="_blank" class="text-xs font-bold text-um-blue hover:underline flex items-center gap-1">
+                        Buka di Tab Baru <i class="fas fa-external-link-alt text-xs">
+
+</i>
+                    </a>
+                </div>
+
+                <!-- User Provided Google Spreadsheet Embed Iframe -->
+                <div class="w-full bg-slate-100 rounded-xl overflow-hidden border border-slate-300 shadow-inner">
+                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQgbIttt8l_r8etHRiV95jqUgKs-XK-ZQA1NpY2jAWm_QVz4UZF8hv2q20tlhmCU_OYbSrSIb_7LzkM/pubhtml?gid=1534693421&amp;single=true&amp;widget=true&amp;headers=false" 
+                            class="w-full h-[650px] border-0" 
+                            title="Data Pendaftaran KBK DATA_NFIS2">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- TAB 3: Petunjuk & Ketentuan -->
+            <div id="tab-panduan" class="p-6 hidden">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Petunjuk Ketentuan Pemetaan KBK & Pembimbing Skripsi</h3>
+                        <p class="text-sm text-slate-600">Departemen Fisika FMIPA Universitas Negeri Malang menetapkan tata cara pendaftaran sebagai berikut:</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-100">
+                            <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-sm mb-3">1</div>
+                            <h4 class="font-bold text-sm text-slate-800 mb-1">Cek Ketersediaan Kuota</h4>
+                            <p class="text-xs text-slate-600">Periksa tabel status kuota dosen di portal ini secara berkala sebelum memilih calon dosen pembimbing.</p>
+                        </div>
+                        <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-100">
+                            <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-sm mb-3">2</div>
+                            <h4 class="font-bold text-sm text-slate-800 mb-1">Pengisian Form Resmi</h4>
+                            <p class="text-xs text-slate-600">Akses tautan resmi <code class="bg-blue-100 px-1 py-0.5 rounded text-blue-800">bit.um.ac.id/daftar-kbk-bimbingan</code> untuk mendaftar.</p>
+                        </div>
+                        <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-100">
+                            <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-sm mb-3">3</div>
+                            <h4 class="font-bold text-sm text-slate-800 mb-1">Aturan Kuota Penuh</h4>
+                            <p class="text-xs text-slate-600">Jika memilih dosen yang statusnya <span class="text-red-600 font-bold">kuota penuh</span>, maka data Anda tidak akan diproses dalam pemetaan.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 space-y-2">
+                        <h4 class="font-bold flex items-center gap-1.5 text-sm">
+                            <i class="fas fa-exclamation-triangle text-amber-600">
+
+</i> Catatan Penting
+                        </h4>
+                        <ul class="list-disc list-inside space-y-1 text-slate-700">
+                            <li>Data pendaftaran diolah secara berkala berdasarkan waktu masukan (timestamp) pada formulir.</li>
+                            <li>Bila terjadi kelebihan kuota akibat pendaftaran simultan, urutan pendaftar teratas dalam Spreadsheet (kolom L) yang diprioritaskan.</li>
+                            <li>Bagi mahasiswa yang pilihan dosennya penuh, disarankan segera menghubungi koordinator KBK atau memilih dosen alternatif yang kuotanya masih tersedia.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-4 text-center">
+                        <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex items-center gap-2 px-6 py-3 bg-um-gold hover:bg-yellow-500 text-um-navy font-bold text-sm rounded-xl transition shadow-md">
+                            <i class="fas fa-edit"></i> Menuju Google Form Pendaftaran KBK
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-um-navy text-slate-400 py-8 text-xs border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <img src="https://upload.wikimedia.org/wikipedia/id/7/73/Lambang_Universitas_Negeri_Malang.jpg?utm_source=id.wikipedia.org&utm_campaign=index&utm_content=original" 
+                     alt="UM Logo" 
+                     referrerpolicy="no-referrer"
+                     class="h-8 w-8 object-contain bg-white rounded-full p-0.5 border border-slate-300"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'48\' fill=\'%23002B49\' stroke=\'%23E0AA3E\' stroke-width=\'4\'/><circle cx=\'50\' cy=\'50\' r=\'38\' fill=\'%23ffffff\'/><text x=\'50\' y=\'46\' font-family=\'sans-serif\' font-weight=\'900\' font-size=\'22\' text-anchor=\'middle\' fill=\'%23002B49\'>UM</text><text x=\'50\' y=\'64\' font-family=\'sans-serif\' font-weight=\'bold\' font-size=\'7.5\' text-anchor=\'middle\' fill=\'%23E0AA3E\'>MALANG</text></svg>';">
+                <div>
+                    <p class="font-bold text-slate-200">Departemen Fisika, FMIPA</p>
+                    <p class="text-slate-400">Universitas Negeri Malang (UM)</p>
+                </div>
+            </div>
+            <div class="text-center md:text-right space-y-1">
+                <p>Akses Form Pendaftaran: <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" class="text-um-gold hover:underline">bit.um.ac.id/daftar-kbk-bimbingan</a></p>
+                <p class="text-slate-500">&copy; 2026 Departemen Fisika FMIPA Universitas Negeri Malang. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initial Lecturer Data & Quota allocations as requested
+        const INITIAL_LECTURERS = [
+            { id: 1, name: "Atsnaita Yasrina, S.Si, M.Sc", kbk: "F. Fisika Komputasional dan Teoretik", maxQuota: 2, filled: 0, aliases: ["atsnaita", "yasrina"] },
+            { id: 2, name: "Dr. Drs. Yudyanto, M.Si", kbk: "F. Fisika Material", maxQuota: 4, filled: 0, aliases: ["yudyanto"] },
+            { id: 3, name: "Dra. Chusnana Insjaf Yogihati, M.Si", kbk: "F. Fisika Material", maxQuota: 2, filled: 0, aliases: ["chusnana", "yogihati"] },
+            { id: 4, name: "Prof. Nandang Mufti, M.T., Ph.D", kbk: "F. Fisika Material", maxQuota: 4, filled: 0, aliases: ["nandang", "mufti"] },
+            { id: 5, name: "Prof. Dr. Sunaryono, M.Si", kbk: "F. Fisika Material", maxQuota: 4, filled: 0, aliases: ["sunaryono"] },
+            { id: 6, name: "Prof. Dr. Dra. Hartatiek, M.Si", kbk: "F. Fisika Material", maxQuota: 4, filled: 0, aliases: ["hartatiek"] },
+            { id: 7, name: "Dr. Nasikhudin, M.Sc", kbk: "F. Fisika Material", maxQuota: 3, filled: 0, aliases: ["nasikhudin"] },
+            { id: 8, name: "Prof. Dr. Arif Hidayat, M.Si", kbk: "F. Fotonik dan Instrumentasi Fisika", maxQuota: 2, filled: 0, aliases: ["arif hidayat"] },
+            { id: 9, name: "Dr. Samsul Hidayat, S.Si, M.T", kbk: "F. Fotonik dan Instrumentasi Fisika", maxQuota: 3, filled: 0, aliases: ["samsul hidayat"] },
+            { id: 10, name: "Nurul Hidayat, S.Si., M.Si., Ph.D", kbk: "F. Fotonik dan Instrumentasi Fisika", maxQuota: 5, filled: 0, aliases: ["nurul hidayat"] }
+        ];
+
+        // Mapped Students Data List provided by Department (78 Students Mapped - Status "Sudah")
+        const MAPPED_STUDENTS = [
+            { name: "Ar Rayyanti Fiqriana", nim: "240322604293", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "DEVANGGA PUTRA BUDIONO", nim: "240322606138", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "FARRA NAUFAL FAIQUL UMMAM", nim: "240322601374", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "HENDRA CATUR TRYANA", nim: "240322604437", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "LORAIN ELISABETH PANJAITAN", nim: "240322615389", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "Maulana Zakki Achmad", nim: "240322606637", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "MOCHAMMAD ADAM HAIKAL", nim: "240322606806", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "NASIKHATUL AF'IDAH", nim: "240322600542", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "NORBERTUS NATHAN PRATIHATA", nim: "240322601980", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "WISNU OCTAVIAN PRASETIO", nim: "240322601027", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "ADAM MALIK IBRAHIM", nim: "240322615720", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "ADITYA DWI SETIAWAN", nim: "240322606124", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "AHMAD RADHITE NAJMULFAJR", nim: "240322601136", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "CHELSEA DHEA AMANDA KINANTI", nim: "240322605947", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "JOVITA CESSA AMANCAWA", nim: "240322604757", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "KAMAL ROVALINA PUDJASETYA", nim: "240322601200", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "MUHAMMAD FAZHUQI ROBBY", nim: "240322600506", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "NIRINA ZHALIANTY PUTRI", nim: "240322600563", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "NUR FADHILAH NI’MAH", nim: "240322600690", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "SILVESTER ARISON MITE", nim: "230322604081", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "UMI MAULIDATUS SOLIKHAH", nim: "240322602636", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "NAGATA DHETA PERMATA CAESAR", nim: "240322603241", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "RENDY EKA PRASETYA", nim: "240322600596", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "AHMAD RAFIF", nim: "240322606631", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "FAJAR ANDIKA PRATAMA", nim: "240322608384", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "INGGRID YUDHA NING TYAS", nim: "240322600403", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "IQLIMA LARASATI", nim: "240322600174", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "NUR FATIKA", nim: "240322602624", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "SITI NUR AZIZATUL MUNADZIROH", nim: "240322602221", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "ELLYANA PUTRI ASWALIZA HANIM", nim: "240322602485", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "RIZQIYA KHOIROTUNNISA'", nim: "240322600233", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "AMALIA NESSA LABIBAH", nim: "240322602520", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "FAHIRANI SOFIA AGITA", nim: "240322605193", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "HENDRI DILAM SUBRATA", nim: "240322600766", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "MUHAMMAD VICKA MAULANA", nim: "240322600659", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "WIENDRYAN NAYSILLA", nim: "240322603772", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "ZASKYA ANINDYA KIRANA PUTRI", nim: "240322601438", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "MOH HABIB DWI PURWOYUDHO", nim: "240322607135", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "Ananda Eka Claudia Diva Rahma", nim: "240322602528", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "ANDINI OKTAVIANI", nim: "240322605119", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "IZZA AULIA ANWAR", nim: "240322601838", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "Nuril Firdausiyah", nim: "240322601434", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "SIFA ISNAINI PANCA ANGGITA FEBRIAN ARISKA", nim: "240322602862", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "SYAHRUL UMAM", nim: "240322604462", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "ASYIFATUL LATIFIYAH", nim: "240322603561", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "DWI APRILIA SARY", nim: "240322604134", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "FAJAR ROZAQUL AKBAR", nim: "240322601812", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "Hazel Shidiq Fahrezi", nim: "240322609092", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "NELLA LAILATUL MAGHFIROH", nim: "240322602701", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "SABRINA QI SABILAH UZMA", nim: "240322605917", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "SITI MUDDAWAMAH", nim: "240322605205", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "STEPHEN PARULIAN NADEAK", nim: "240322606091", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "FAUZIA ROHMATUL ISNAINI", nim: "240322601322", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "NABILA PUTRI GYZELLA", nim: "240322605742", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "IMELDA GRACE DENGAH", nim: "240322604282", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "NAJMI OLIVIA PUTRI", nim: "240322606248", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "TUMENGGUNG ADINATA", nim: "240322606952", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "AFIF NURIHSAN", nim: "240322601862", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "Musdalifah", nim: "240322602241", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "ANISA LAILATUL MAGFIROH", nim: "240322605498", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "FEBRYANSYAH HUSAEN AL BAQR", nim: "240322605952", prodi: "S1 Fisika", offering: "AM", status: "Sudah" },
+            { name: "LINTANG BUDI ASMARA", nim: "240322604237", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "LUKMAN HAKIM", nim: "240322601327", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "MIFTHAQUL GALUH SHOFIA AQIL", nim: "240322605336", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "Sultan Imannu Ibrahim", nim: "240322601059", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "AMANDEA YULIA PUTRIA", nim: "240322600860", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "DHINI EKA WIYANTI AGUSDIANSYAH", nim: "240322607886", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "ELVASSHALIH ARMANIA AS TSALIS", nim: "240322604614", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "EMILIA HARIROTUN NAFISAH", nim: "240322607677", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "M. FAREL ADI PRIYANTO", nim: "240322604790", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "MOHAMMAD AMIRUL FALAH", nim: "240322615816", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "ZUNATAN NUR AISYA ROHAMIN", nim: "240322600519", prodi: "S1 Fisika", offering: "O", status: "Sudah" },
+            { name: "NAFISA ZAHRA ALFIANANTA", nim: "240322605502", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "ALFI NUR ROHMATINA", nim: "240322602527", prodi: "S1 Fisika", offering: "M", status: "Sudah" },
+            { name: "LEILANI MAURELIA FIRSTY", nim: "240322601806", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "MUHAMAD RIZKY SEPTIAWAN", nim: "240322602036", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "MUHAMMAD RAFLI RINALDI", nim: "240322600893", prodi: "S1 Fisika", offering: "N", status: "Sudah" },
+            { name: "NEZA ATHAYA FAWNIA", nim: "240322601356", prodi: "S1 Fisika", offering: "N", status: "Sudah" }
+        ];
+
+        // State Store
+        let lecturers = JSON.parse(JSON.stringify(INITIAL_LECTURERS));
+        let activeFilter = 'all';
+        const csvPubUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgbIttt8l_r8etHRiV95jqUgKs-XK-ZQA1NpY2jAWm_QVz4UZF8hv2q20tlhmCU_OYbSrSIb_7LzkM/pub?gid=1534693421&single=true&output=csv";
+
+        // Render Student List Table
+        function filterStudents() {
+            const searchVal = (document.getElementById('search-mhs').value || '').toLowerCase().trim();
+            const offeringFilter = document.getElementById('filter-offering').value;
+            const tbody = document.getElementById('mhs-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = MAPPED_STUDENTS.filter(s => {
+                const matchQuery = s.name.toLowerCase().includes(searchVal) || s.nim.includes(searchVal);
+                const matchOffering = (offeringFilter === 'ALL') || (s.offering === offeringFilter);
+                return matchQuery && matchOffering;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 text-center bg-red-50 text-red-700">
+                            <div class="max-w-md mx-auto space-y-2 p-3">
+                                <i class="fas fa-user-times text-3xl text-red-500"></i>
+                                <p class="font-bold text-sm">Nama/NIM "${searchVal}" TIDAK DITEMUKAN dalam daftar pemetaan disetujui!</p>
+                                <p class="text-xs text-slate-600">Sesuai ketentuan, Anda <strong>diminta untuk mengisi form pendaftaran KBK dan Calon Pembimbing kembali</strong> dengan memperhatikan kuota dosen yang masih tersedia.</p>
+                                <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" class="inline-block mt-2 px-4 py-2 bg-um-gold text-um-navy font-bold text-xs rounded-lg shadow hover:bg-yellow-400 transition">
+                                    Isi Form Pendaftaran Sekarang <i class="fas fa-external-link-alt ml-1"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach((mhs, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center font-medium text-slate-500">${idx + 1}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900">${mhs.name}</td>
+                    <td class="py-3 px-4 font-mono text-slate-700">${mhs.nim}</td>
+                    <td class="py-3 px-4 text-slate-600">${mhs.prodi}</td>
+                    <td class="py-3 px-4 text-center font-semibold text-slate-800">${mhs.offering}</td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> ${mhs.status} Dipetakan
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center text-slate-500 text-[11px]">
+                        <span class="text-emerald-700 font-medium"><i class="fas fa-check-circle mr-1"></i> Terdata Pembimbing</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Helper to dynamic styling for KBK badges
+        function getKbkBadgeStyle(kbk) {
+            if (kbk.includes("Komputasional")) {
+                return "bg-purple-100 text-purple-800 border-purple-200";
+            } else if (kbk.includes("Material")) {
+                return "bg-blue-100 text-blue-800 border-blue-200";
+            } else if (kbk.includes("Fotonik")) {
+                return "bg-amber-100 text-amber-900 border-amber-200";
+            }
+            return "bg-slate-100 text-slate-800 border-slate-200";
+        }
+
+        // Fetch and process data from Google Spreadsheet
+        async function fetchSheetData() {
+            const refreshIcon = document.getElementById('refresh-icon');
+            const syncSpinner = document.getElementById('sync-spinner');
+            const refreshText = document.getElementById('refresh-text');
+
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+            if (syncSpinner) syncSpinner.style.display = 'inline-block';
+            if (refreshText) refreshText.textContent = 'Memuat...';
+
+            try {
+                // Try fetching CSV from Google Sheets published URL directly
+                const response = await fetch(csvPubUrl, { cache: "no-store" });
+                
+                if (!response.ok) {
+                    throw new Error("HTTP Status " + response.status);
+                }
+
+                const csvText = await response.text();
+                parseAndCountColumnL(csvText);
+
+                document.getElementById('last-updated').textContent = 'Terakhir diperbarui: ' + new Date().toLocaleTimeString('id-ID');
+            } catch (error) {
+                console.warn("Direct CSV fetch encountered restriction or CORS, falling back to html scraping or simulation state:", error);
+                // Try parsing via public html proxy or keep simulated state
+                await fetchViaHtmlProxy();
+            } finally {
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                if (syncSpinner) syncSpinner.style.display = 'none';
+                if (refreshText) refreshText.textContent = 'Refresh Kuota';
+                renderLecturers();
+                updateStats();
+            }
+        }
+
+        async function fetchViaHtmlProxy() {
+            try {
+                // Fetch public html directly
+                const htmlUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgbIttt8l_r8etHRiV95jqUgKs-XK-ZQA1NpY2jAWm_QVz4UZF8hv2q20tlhmCU_OYbSrSIb_7LzkM/pubhtml?gid=1534693421&single=true";
+                const res = await fetch(htmlUrl);
+                const html = await res.text();
+
+                // Extract table rows from pubhtml
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const rows = doc.querySelectorAll('table.waffle tbody tr');
+
+                // Column L corresponds to index 11 (0-based: A=0, B=1... L=11)
+                const counts = {};
+                lecturers.forEach(l => counts[l.id] = 0);
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 11) {
+                        const cellVal = cells[11].textContent || '';
+                        matchAndIncrement(cellVal, counts);
+                    }
+                });
+
+                // Update lecturer counts
+                lecturers.forEach(lec => {
+                    if (counts[lec.id] !== undefined) {
+                        lec.filled = counts[lec.id];
+                    }
+                });
+                
+                document.getElementById('last-updated').textContent = 'Terakhir diperbarui: ' + new Date().toLocaleTimeString('id-ID');
+            } catch (err) {
+                console.log("HTML parse fallback handled.", err);
+            }
+        }
+
+        function parseAndCountColumnL(csvText) {
+            Papa.parse(csvText, {
+                header: false,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    const data = results.data;
+                    const counts = {};
+                    lecturers.forEach(l => counts[l.id] = 0);
+
+                    // Iterate rows starting from row 1 (skipping header)
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        // Column L is index 11
+                        if (row && row.length > 11) {
+                            const val = row[11];
+                            matchAndIncrement(val, counts);
+                        } else if (row && row.length > 0) {
+                            // Search whole row if Column L index varies
+                            const fullRowText = row.join(" ");
+                            matchAndIncrement(fullRowText, counts);
+                        }
+                    }
+
+                    lecturers.forEach(lec => {
+                        lec.filled = counts[lec.id] || 0;
+                    });
+                }
+            });
+        }
+
+        function matchAndIncrement(text, countsObj) {
+            if (!text) return;
+            const cleanText = text.toLowerCase().trim();
+            if (!cleanText) return;
+
+            lecturers.forEach(lec => {
+                const matchName = lec.name.toLowerCase();
+                if (cleanText.includes(matchName)) {
+                    countsObj[lec.id]++;
+                    return;
+                }
+                // Check aliases
+                for (let alias of lec.aliases) {
+                    if (cleanText.includes(alias)) {
+                        countsObj[lec.id]++;
+                        break;
+                    }
+                }
+            });
+        }
+
+        // Render Lecturer Cards Grid
+        function renderLecturers() {
+            const grid = document.getElementById('lecturers-grid');
+            const searchVal = (document.getElementById('search-dosen').value || '').toLowerCase().trim();
+
+            grid.innerHTML = '';
+
+            let availableCount = 0;
+            let fullCount = 0;
+
+            const filtered = lecturers.filter(lec => {
+                const remaining = lec.maxQuota - lec.filled;
+                const isFull = lec.filled >= lec.maxQuota;
+
+                if (isFull) fullCount++;
+                else availableCount++;
+
+                // Apply Filter Tab
+                if (activeFilter === 'available' && isFull) return false;
+                if (activeFilter === 'full' && !isFull) return false;
+
+                // Apply Search Text (Search name or KBK)
+                if (searchVal) {
+                    const matchName = lec.name.toLowerCase().includes(searchVal);
+                    const matchKbk = lec.kbk.toLowerCase().includes(searchVal);
+                    return matchName || matchKbk;
+                }
+
+                return true;
+            });
+
+            // Update badge counters
+            document.getElementById('cnt-all').textContent = lecturers.length;
+            document.getElementById('cnt-available').textContent = availableCount;
+            document.getElementById('cnt-full').textContent = fullCount;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-500 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <i class="fas fa-user-slash text-3xl mb-2 text-slate-400"></i>
+                        <p class="font-medium text-sm">Tidak ada dosen yang sesuai dengan kriteria pencarian/filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(lec => {
+                const remaining = Math.max(0, lec.maxQuota - lec.filled);
+                const isFull = lec.filled >= lec.maxQuota;
+                const percent = Math.min(100, Math.round((lec.filled / lec.maxQuota) * 100));
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-2xl border ${isFull ? 'border-red-300 ring-1 ring-red-200 shadow-sm' : 'border-slate-200 shadow-sm hover:shadow-md'} transition-all duration-200 overflow-hidden flex flex-col justify-between`;
+
+                // Status Badge styling
+                let statusBadgeHTML = '';
+                let statusNoticeHTML = '';
+
+                if (isFull) {
+                    statusBadgeHTML = `
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-red-100 text-red-700 border border-red-200">
+                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span> Kuota Penuh
+                        </span>
+                    `;
+                    // Mandatory exact requirement string in RED
+                    statusNoticeHTML = `
+                        <div class="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5 text-red-700 text-xs font-semibold leading-snug">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-sm mt-0.5 shrink-0"></i>
+                            <span>kuota penuh, isian Saudara tidak akan dimasukkan dalam pemetaan.</span>
+                        </div>
+                    `;
+                } else {
+                    statusBadgeHTML = `
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Tersedia (Sisa ${remaining})
+                        </span>
+                    `;
+                    statusNoticeHTML = `
+                        <div class="mt-3 p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl flex items-center justify-between text-emerald-800 text-xs font-medium">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-check-circle text-emerald-600"></i> Kuota Masih Tersedia
+                            </span>
+                            <span class="font-bold bg-white px-2 py-0.5 rounded border border-emerald-200">${remaining} Tempat Lagi</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="p-5">
+                        <div class="mb-3">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border ${getKbkBadgeStyle(lec.kbk)} mb-2.5">
+                                <i class="fas fa-bookmark text-[10px]"></i>
+                                ${lec.kbk}
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl ${isFull ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-um-blue'} flex items-center justify-center font-bold text-lg shrink-0 border border-slate-200">
+                                    <i class="fas fa-user-academic"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">${lec.name}</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Dosen Pengampu / Pembimbing</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${statusBadgeHTML}
+
+                        <!-- Progress Bar -->
+                        <div class="mt-4 space-y-1.5">
+                            <div class="flex justify-between text-xs text-slate-600 font-medium">
+                                <span>Terisi: <strong class="${isFull ? 'text-red-600' : 'text-slate-800'}">${lec.filled}</strong> dari ${lec.maxQuota}</span>
+                                <span>${percent}%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                                <div class="h-full ${isFull ? 'bg-red-500' : percent >= 75 ? 'bg-amber-500' : 'bg-um-blue'} transition-all duration-300" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+
+                        ${statusNoticeHTML}
+                    </div>
+
+                    <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-slate-500">Departemen Fisika UM</span>
+                        ${isFull ? `
+                            <button disabled class="px-3 py-1.5 bg-slate-200 text-slate-400 text-xs font-bold rounded-lg cursor-not-allowed">
+                                Penuh
+                            </button>
+                        ` : `
+                            <a href="https://bit.um.ac.id/daftar-kbk-bimbingan" target="_blank" rel="noopener noreferrer" 
+                               class="px-3.5 py-1.5 bg-um-gold hover:bg-yellow-500 text-um-navy text-xs font-extrabold rounded-lg transition shadow-sm flex items-center gap-1.5">
+                                Pilih Dosen Ini <i class="fas fa-arrow-right text-[10px]"></i>
+                            </a>
+                        `}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function updateStats() {
+            let totalCap = 0;
+            let totalFilled = 0;
+
+            lecturers.forEach(lec => {
+                totalCap += lec.maxQuota;
+                totalFilled += lec.filled;
+            });
+
+            const remainingTotal = Math.max(0, totalCap - totalFilled);
+
+            document.getElementById('stat-total-dosen').textContent = lecturers.length;
+            document.getElementById('stat-total-kuota').textContent = totalCap;
+            document.getElementById('stat-total-terisi').textContent = totalFilled;
+            document.getElementById('stat-sisa-kuota').textContent = remainingTotal;
+        }
+
+        function setFilter(filterType) {
+            activeFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200';
+            });
+
+            const activeBtn = document.getElementById(`filter-${filterType}`);
+            if (activeBtn) {
+                activeBtn.className = 'filter-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-um-blue text-white shadow-sm';
+            }
+
+            renderLecturers();
+        }
+
+        function switchTab(tabId) {
+            ['tab-dosen', 'tab-sheet', 'tab-panduan'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-6 py-3.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap';
+            });
+
+            const currentBtn = document.getElementById(`btn-${tabId}`);
+            if (currentBtn) {
+                currentBtn.className = 'tab-btn px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-um-blue text-um-blue flex items-center gap-2 whitespace-nowrap';
+            }
+        }
+
+        // Simulation Modal Handlers
+        function openSimulationModal() {
+            const listContainer = document.getElementById('sim-list');
+            listContainer.innerHTML = '';
+
+            lecturers.forEach(lec => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200';
+                item.innerHTML = `
+                    <div class="pr-2">
+                        <p class="text-xs font-bold text-slate-800">${lec.name}</p>
+                        <p class="text-[11px] text-slate-500">Max Kuota: ${lec.maxQuota}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="adjustSimFilled(${lec.id}, -1)" class="w-7 h-7 rounded-lg bg-slate-200 hover:bg-slate-300 font-bold text-slate-700 flex items-center justify-center">-</button>
+                        <span class="w-6 text-center text-xs font-bold text-slate-900" id="sim-count-${lec.id}">${lec.filled}</span>
+                        <button onclick="adjustSimFilled(${lec.id}, 1)" class="w-7 h-7 rounded-lg bg-um-blue hover:bg-slate-800 text-white font-bold flex items-center justify-center">+</button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+
+            document.getElementById('sim-modal').classList.remove('hidden');
+        }
+
+        function closeSimulationModal() {
+            document.getElementById('sim-modal').classList.add('hidden');
+            renderLecturers();
+            updateStats();
+        }
+
+        function adjustSimFilled(id, delta) {
+            const lec = lecturers.find(l => l.id === id);
+            if (lec) {
+                lec.filled = Math.max(0, lec.filled + delta);
+                const countElem = document.getElementById(`sim-count-${id}`);
+                if (countElem) countElem.textContent = lec.filled;
+            }
+        }
+
+        function resetSimulation() {
+            lecturers.forEach(lec => lec.filled = 0);
+            openSimulationModal();
+        }
+
+        window.onload = function() {
+            filterStudents();
+            renderLecturers();
+            updateStats();
+            fetchSheetData();
+
+            // Auto refresh sheet data every 30 seconds
+            setInterval(() => {
+                fetchSheetData();
+            }, 30000);
+        };
+    </script>
+</body>
+</html>
